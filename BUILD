@@ -63,7 +63,7 @@ android_binary(
     # Package assets from assets dir as well as all model targets. Remove undesired models
     # (and corresponding Activities in source) to reduce APK size.
     assets = [
-        "//tensorflow/examples/android/assets:asset_files",
+        "//tensorflow/examples/numseq-android/assets:asset_files",
         "@inception5h//:model_files",
         "@mobile_multibox//:model_files",
     ],
