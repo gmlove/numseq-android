@@ -21,8 +21,8 @@ limitations under the License.
 #include "tensorflow/core/platform/logging.h"
 #include "tensorflow/core/platform/types.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/log_streaming.h"
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/log_streaming.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
 #ifdef LOG_TIME
 

@@ -18,7 +18,7 @@ limitations under the License.
 
 #include <android/log.h>
 
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
 // The JniIntField class is used to access Java fields from native code. This
 // technique of hiding pointers to native objects in opaque Java fields is how

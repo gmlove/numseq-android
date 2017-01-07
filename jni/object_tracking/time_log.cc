@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow/core/platform/types.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/time_log.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/time_log.h"
 
 using namespace tensorflow;
 

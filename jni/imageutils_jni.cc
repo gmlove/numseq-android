@@ -21,8 +21,8 @@ limitations under the License.
 #include <stdlib.h>
 
 #include "tensorflow/core/platform/types.h"
-#include "tensorflow/examples/android/jni/rgb2yuv.h"
-#include "tensorflow/examples/android/jni/yuv2rgb.h"
+#include "tensorflow/examples/numseq-android/jni/rgb2yuv.h"
+#include "tensorflow/examples/numseq-android/jni/yuv2rgb.h"
 
 #define IMAGEUTILS_METHOD(METHOD_NAME) \
   Java_org_tensorflow_demo_env_ImageUtils_##METHOD_NAME  // NOLINT

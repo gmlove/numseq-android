@@ -30,18 +30,18 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "tensorflow/examples/android/jni/object_tracking/geom.h"
-#include "tensorflow/examples/android/jni/object_tracking/image-inl.h"
-#include "tensorflow/examples/android/jni/object_tracking/image.h"
-#include "tensorflow/examples/android/jni/object_tracking/integral_image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/geom.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image-inl.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/integral_image.h"
 #ifdef __RENDER_OPENGL__
-#include "tensorflow/examples/android/jni/object_tracking/sprite.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/sprite.h"
 #endif
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/config.h"
-#include "tensorflow/examples/android/jni/object_tracking/image_data.h"
-#include "tensorflow/examples/android/jni/object_tracking/object_model.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/config.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image_data.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/object_model.h"
 
 namespace tf_tracking {
 

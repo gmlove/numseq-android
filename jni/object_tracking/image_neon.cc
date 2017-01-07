@@ -22,10 +22,10 @@ limitations under the License.
 
 #include "tensorflow/core/platform/types.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/image-inl.h"
-#include "tensorflow/examples/android/jni/object_tracking/image.h"
-#include "tensorflow/examples/android/jni/object_tracking/image_utils.h"
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image-inl.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image_utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
 using namespace tensorflow;
 

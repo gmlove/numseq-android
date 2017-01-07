@@ -18,15 +18,15 @@ limitations under the License.
 
 #include "tensorflow/core/platform/types.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/geom.h"
-#include "tensorflow/examples/android/jni/object_tracking/image-inl.h"
-#include "tensorflow/examples/android/jni/object_tracking/image.h"
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/geom.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image-inl.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/config.h"
-#include "tensorflow/examples/android/jni/object_tracking/frame_pair.h"
-#include "tensorflow/examples/android/jni/object_tracking/image_data.h"
-#include "tensorflow/examples/android/jni/object_tracking/keypoint.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/config.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/frame_pair.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image_data.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/keypoint.h"
 
 using namespace tensorflow;
 

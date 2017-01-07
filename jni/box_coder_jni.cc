@@ -32,7 +32,7 @@ limitations under the License.
 #include "tensorflow/core/platform/env.h"
 #include "tensorflow/core/platform/types.h"
 
-#include "tensorflow/examples/android/proto/box_coder.pb.h"
+#include "tensorflow/examples/numseq-android/proto/box_coder.pb.h"
 
 #define TENSORFLOW_METHOD(METHOD_NAME) \
   Java_org_tensorflow_demo_TensorFlowMultiBoxDetector_##METHOD_NAME  // NOLINT

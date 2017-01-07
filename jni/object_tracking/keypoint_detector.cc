@@ -17,14 +17,14 @@ limitations under the License.
 
 #include <float.h>
 
-#include "tensorflow/examples/android/jni/object_tracking/image-inl.h"
-#include "tensorflow/examples/android/jni/object_tracking/image.h"
-#include "tensorflow/examples/android/jni/object_tracking/time_log.h"
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image-inl.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/time_log.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
-#include "tensorflow/examples/android/jni/object_tracking/config.h"
-#include "tensorflow/examples/android/jni/object_tracking/keypoint.h"
-#include "tensorflow/examples/android/jni/object_tracking/keypoint_detector.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/config.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/keypoint.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/keypoint_detector.h"
 
 namespace tf_tracking {
 

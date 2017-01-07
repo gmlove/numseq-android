@@ -16,10 +16,10 @@ limitations under the License.
 #ifndef THIRD_PARTY_TENSORFLOW_EXAMPLES_ANDROID_JNI_OBJECT_TRACKING_INTEGRAL_IMAGE_H_
 #define THIRD_PARTY_TENSORFLOW_EXAMPLES_ANDROID_JNI_OBJECT_TRACKING_INTEGRAL_IMAGE_H_
 
-#include "tensorflow/examples/android/jni/object_tracking/geom.h"
-#include "tensorflow/examples/android/jni/object_tracking/image-inl.h"
-#include "tensorflow/examples/android/jni/object_tracking/image.h"
-#include "tensorflow/examples/android/jni/object_tracking/utils.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/geom.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image-inl.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/image.h"
+#include "tensorflow/examples/numseq-android/jni/object_tracking/utils.h"
 
 namespace tf_tracking {
 
