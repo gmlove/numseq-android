@@ -16,7 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">TensorFlow Demo</string>
-    <string name="activity_name_classification">TF Classify</string>
-    <string name="activity_name_detection">TF Detect</string>
+    <string name="app_name">Number Sequence Recognizer</string>
+    <string name="activity_name_classification">NumTeller</string>
 </resources>

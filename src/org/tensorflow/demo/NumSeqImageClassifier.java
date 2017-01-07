@@ -11,12 +11,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-/**
- * Created by gmliao on 1/7/17.
- */
 public class NumSeqImageClassifier implements Classifier {
     static {
-        System.loadLibrary("tensorflow_demo");
+        System.loadLibrary("tensorflow_numseq");
     }
 
     private static final String TAG = "NumSeqImageClassifier";
@@ -46,8 +43,6 @@ public class NumSeqImageClassifier implements Classifier {
      *
      * @param assetManager The asset manager to be used to load assets.
      * @param modelFilename The filepath of the model GraphDef protocol buffer.
-     * @param labelFilename The filepath of label file for classes.
-     * @param numClasses The number of classes output by the model.
      * @param inputSize The input size. A square image of inputSize x inputSize is assumed.
      * @param imageMean The assumed mean of the image values.
      * @param imageStd The assumed std of the image values.
@@ -59,8 +54,6 @@ public class NumSeqImageClassifier implements Classifier {
     public int initializeTensorFlow(
             AssetManager assetManager,
             String modelFilename,
-            String labelFilename,
-            int numClasses,
             int inputSize,
             int imageMean,
             float imageStd,
@@ -68,19 +61,6 @@ public class NumSeqImageClassifier implements Classifier {
             String outputName) throws IOException {
         this.inputName = inputName;
         this.outputName = outputName;
-
-        // Read the label names into memory.
-        // TODO(andrewharp): make this handle non-assets.
-        String actualFilename = labelFilename.split("file:///android_asset/")[1];
-        Log.i(TAG, "Reading labels from: " + actualFilename);
-        BufferedReader br = null;
-        br = new BufferedReader(new InputStreamReader(assetManager.open(actualFilename)));
-        String line;
-        while ((line = br.readLine()) != null) {
-            labels.add(line);
-        }
-        br.close();
-        Log.i(TAG, "Read " + labels.size() + ", " + numClasses + " specified");
 
         this.inputSize = inputSize;
         this.imageMean = imageMean;
