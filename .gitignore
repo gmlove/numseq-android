@@ -1,0 +1,8 @@
+.gradle
+.idea
+*.iml
+assets/
+!assets/BUILD
+gradleBuild/
+libs/
+local.properties
