@@ -16,12 +16,8 @@
 
 package org.tensorflow.demo;
 
-import android.graphics.Bitmap;
+import android.graphics.*;
 import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
@@ -37,38 +33,27 @@ import org.tensorflow.demo.OverlayView.DrawCallback;
 import org.tensorflow.demo.env.BorderedText;
 import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.Logger;
-import org.tensorflow.demo.R;
+import org.tensorflow.demo.env.RectUtils;
 
 public class NumSeqClassifierActivity extends CameraActivity implements OnImageAvailableListener {
     private static final Logger LOGGER = new Logger();
 
-    // These are the settings for the original v1 Inception model. If you want to
-    // use a model that's been produced from the TensorFlow for Poets codelab,
-    // you'll need to set IMAGE_SIZE = 299, IMAGE_MEAN = 128, IMAGE_STD = 128,
-    // INPUT_NAME = "Mul:0", and OUTPUT_NAME = "final_result:0".
-    // You'll also need to update the MODEL_FILE and LABEL_FILE paths to point to
-    // the ones you produced.
-    private static final int INPUT_SIZE = 64;
-    private static final int IMAGE_MEAN = 117;
-    private static final float IMAGE_STD = 1;
-    private static final String INPUT_NAME = "input:0";
-    private static final String OUTPUT_NAME = "output:0";
-
-    private static final String MODEL_FILE = "file:///android_asset/graph.pb";
-
     private static final boolean SAVE_PREVIEW_BITMAP = false;
-
     private static final boolean MAINTAIN_ASPECT = true;
 
     private NumSeqImageClassifier classifier;
+    private BboxImageDetector bboxDetector;
 
     private Integer sensorOrientation;
 
+    private int inputSize = BboxImageDetector.INPUT_SIZE;
     private int previewWidth = 0;
     private int previewHeight = 0;
     private byte[][] yuvBytes;
     private int[] rgbBytes = null;
     private Bitmap rgbFrameBitmap = null;
+    private Bitmap bboxBitmap = null;
+    private Rect inferedBbox = null;
     private Bitmap croppedBitmap = null;
 
     private Bitmap cropCopyBitmap;
@@ -92,7 +77,7 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
 
     @Override
     protected int getDesiredPreviewFrameSize() {
-        return INPUT_SIZE;
+        return inputSize;
     }
 
     private static final float TEXT_SIZE_DIP = 10;
@@ -105,22 +90,17 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
         borderedText = new BorderedText(textSizePx);
         borderedText.setTypeface(Typeface.MONOSPACE);
 
+        bboxDetector = new BboxImageDetector();
+        try {
+            bboxDetector.initializeTensorFlow(getAssets());
+        } catch (final Exception e) {
+            throw new RuntimeException("Error initializing TensorFlow!", e);
+        }
+
         classifier = new NumSeqImageClassifier();
 
         try {
-            final int initStatus =
-                    classifier.initializeTensorFlow(
-                            getAssets(),
-                            MODEL_FILE,
-                            INPUT_SIZE,
-                            IMAGE_MEAN,
-                            IMAGE_STD,
-                            INPUT_NAME,
-                            OUTPUT_NAME);
-            if (initStatus != 0) {
-                LOGGER.e("TF init status != 0: %d", initStatus);
-                throw new RuntimeException();
-            }
+            classifier.initializeTensorFlow(getAssets());
         } catch (final Exception e) {
             throw new RuntimeException("Error initializing TensorFlow!", e);
         }
@@ -140,11 +120,12 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
         LOGGER.i("Initializing at size %dx%d", previewWidth, previewHeight);
         rgbBytes = new int[previewWidth * previewHeight];
         rgbFrameBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Config.ARGB_8888);
-        croppedBitmap = Bitmap.createBitmap(INPUT_SIZE, INPUT_SIZE, Config.ARGB_8888);
+        bboxBitmap = Bitmap.createBitmap(inputSize, inputSize, Config.ARGB_8888);
+        croppedBitmap = Bitmap.createBitmap(NumSeqImageClassifier.INPUT_SIZE, NumSeqImageClassifier.INPUT_SIZE, Config.ARGB_8888);
 
         frameToCropTransform = ImageUtils.getTransformationMatrix(
                 previewWidth, previewHeight,
-                INPUT_SIZE, INPUT_SIZE,
+                inputSize, inputSize,
                 sensorOrientation, MAINTAIN_ASPECT);
 
         cropToFrameTransform = new Matrix();
@@ -208,12 +189,12 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
         }
 
         rgbFrameBitmap.setPixels(rgbBytes, 0, previewWidth, 0, 0, previewWidth, previewHeight);
-        final Canvas canvas = new Canvas(croppedBitmap);
-        canvas.drawBitmap(rgbFrameBitmap, frameToCropTransform, null);
+        final Canvas bboxCanvas = new Canvas(bboxBitmap);
+        bboxCanvas.drawBitmap(rgbFrameBitmap, frameToCropTransform, null);
 
         // For examining the actual TF input.
         if (SAVE_PREVIEW_BITMAP) {
-            ImageUtils.saveBitmap(croppedBitmap);
+            ImageUtils.saveBitmap(bboxBitmap);
         }
 
         runInBackground(
@@ -221,7 +202,14 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
                     @Override
                     public void run() {
                         final long startTime = SystemClock.uptimeMillis();
+                        final List<Classifier.Recognition> bboxes = bboxDetector.recognizeImage(bboxBitmap);
+
+                        final Canvas canvas = new Canvas(croppedBitmap);
+                        inferedBbox = RectUtils.fixRect(inputSize, inputSize, bboxes.get(0).getLocation());
+                        canvas.drawBitmap(bboxBitmap, inferedBbox, inferedBbox, null);
+
                         final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+                        results.addAll(0, bboxes);
                         lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
                         cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
@@ -263,6 +251,7 @@ public class NumSeqClassifierActivity extends CameraActivity implements OnImageA
             }
 
             lines.add("Frame: " + previewWidth + "x" + previewHeight);
+            lines.add(String.format("Infered bbox: %sx%s-%sx%s", inferedBbox.left, inferedBbox.top, inferedBbox.right, inferedBbox.bottom));
             lines.add("Crop: " + copy.getWidth() + "x" + copy.getHeight());
             lines.add("View: " + canvas.getWidth() + "x" + canvas.getHeight());
             lines.add("Rotation: " + sensorOrientation);

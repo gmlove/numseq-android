@@ -2,31 +2,27 @@ package org.tensorflow.demo;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Trace;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.*;
 
-public class NumSeqImageClassifier implements Classifier {
+public class BboxImageDetector implements Classifier {
     static {
         System.loadLibrary("tensorflow_numseq");
     }
 
-    private static final String TAG = "NumSeqImageClassifier";
-
-    // Only return this many results with at least this confidence.
-    private static final int MAX_RESULTS = 3;
-    private static final float THRESHOLD = 0.1f;
+    private static final String TAG = "BboxImageDetector";
 
     // Config values.
-    public static final String INPUT_NAME = "input:0";
-    public static final String OUTPUT_NAME = "output:0";
-    public static final String INITIALIZER_NAME = "initializer";
+    public static final String INPUT_NAME = "input-bbox:0";
+    public static final String OUTPUT_NAME = "output-bbox:0";
+    public static final String INITIALIZER_NAME = "initializer-bbox";
     public static final int INPUT_SIZE = 64;
     public static final int IMAGE_MEAN = 117;
     public static final float IMAGE_STD = 1;
-    public static final String MODEL_FILE = "file:///android_asset/graph.pb";
+    public static final String MODEL_FILE = "file:///android_asset/graph-bbox.pb";
 
     // Pre-allocated buffers.
     private Vector<String> labels = new Vector<String>();
@@ -46,17 +42,20 @@ public class NumSeqImageClassifier implements Classifier {
      */
     public void initializeTensorFlow(
             AssetManager assetManager) throws IOException {
+
         // Pre-allocate buffers.
         outputNames = new String[] {OUTPUT_NAME};
         intValues = new int[INPUT_SIZE * INPUT_SIZE];
         floatValues = new float[INPUT_SIZE * INPUT_SIZE * 3];
-        outputs = new float[5 + 11 * 5];
+        outputs = new float[4];
 
         inferenceInterface = new TensorFlowInferenceInterface();
+        inferenceInterface.enableStatLogging(true);
 
         if (inferenceInterface.initializeTensorFlow(assetManager, MODEL_FILE) != 0) {
             throw new RuntimeException("TF initialization failed");
         }
+
         if (inferenceInterface.initializeModel(INITIALIZER_NAME) != 0) {
             throw new RuntimeException("TF initialization failed");
         }
@@ -103,46 +102,11 @@ public class NumSeqImageClassifier implements Classifier {
     }
 
     private Recognition getRecognitions(float[] outputs) {
-        final StringBuilder sb = new StringBuilder();
-        float confidence;
-        float[] overallConfidence = new float[6];
-
-        int length = argmax(new float[]{outputs[0], outputs[1], outputs[2], outputs[3], outputs[4]}) + 1;
-        confidence = outputs[length - 1];
-        overallConfidence[0] = confidence;
-        int[] numbers = new int[5];
-        for (int i = 0; i < 5; i++) {
-            float[] number_pb = new float[11];
-            for (int j = 0; j < 11; j++) {
-                number_pb[j] = outputs[5 + i * 11 + j];
-            }
-            numbers[i] = argmax(number_pb);
-            confidence = confidence * outputs[5 + i * 11 + numbers[i]];
-            overallConfidence[1 + i] = outputs[5 + i * 11 + numbers[i]];
-        }
-
-        for (int i = 0; i < length; i++) {
-            sb.append((char)((int)'0' + numbers[i]));
-        }
-
-        Log.i(TAG, "Output confidence: " + Arrays.toString(outputs));
-        Log.i(TAG, "Overall confidence: " + Arrays.toString(overallConfidence));
-
-        return new Recognition("1", String.valueOf(sb.toString()), confidence, null);
+        String title = String.format("bbox[%s]: [%.2f, %.2f, %.2f, %.2f]",
+                outputs.length, outputs[0], outputs[1], outputs[2], outputs[3]);
+        RectF bbox = new RectF(outputs[0], outputs[1], outputs[0] + outputs[2], outputs[1] + outputs[3]);
+        return new Recognition("0", title, 1.0f, bbox);
     }
-
-    private int argmax(float[] floats) {
-        float max = floats[0];
-        int idx = 0;
-        for (int i = 0; i < floats.length; i++) {
-            if (max < floats[i]) {
-                max = floats[i];
-                idx = i;
-            }
-        }
-        return idx;
-    }
-
 
     public void enableStatLogging(boolean debug) {
         inferenceInterface.enableStatLogging(debug);
