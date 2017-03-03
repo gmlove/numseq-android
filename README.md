@@ -10,7 +10,7 @@ This project is based on tensorflow android demo. Unused files are removed to ke
 
 This project should be built under the tensorflow source code, so download 
 tensorflow source project before you go ahead. Currently it's built at commit
-`e4dde23d58a10c9d0c14005d20d1ecdd599539ac` of tensorflow source code. 
+`c2fc604b52dfee03794a95f88b0187d278aad078` of tensorflow source code.
 
 After you clone tensorflow source code, place this project at `//tensorflow/examples/numseq-android`. 
 
@@ -30,19 +30,36 @@ you installed the NDK and SDK. Otherwise an error such as:
 "The external label '//external:android/sdk' is not bound to anything" will
 be reported.
 
-The TensorFlow `GraphDef` that contains the model definition and weights
-is not packaged in the repo because of its size. It can be trained and 
+The tensorflow model is not packaged in the repo because of its size. It can be trained and
 exported by project [num-seq-recognizer](https://github.com/gmlove/num-seq-recognizer).
 
 After editing your WORKSPACE file to update the SDK/NDK configuration,
-you may build the APK. Run this from folder `//tensorflow/examples/numseq-android`:
+you may build the APK.
+
+To build the apk, first you need to build the inference.so and inference.jar
+
+Run this from folder `//`
+
+```bash
+bazel build -c opt //tensorflow/contrib/android:libtensorflow_inference.so \
+   --crosstool_top=//external:android/crosstool \
+   --host_crosstool_top=@bazel_tools//tools/cpp:toolchain \
+   --cpu=armeabi-v7a
+bazel build //tensorflow/contrib/android:android_tensorflow_inference_java
+```
+
+Two files will be generated at `bazel-bin/tensorflow/contrib/android/libtensorflow_inference.so`
+and `bazel-bin/tensorflow/contrib/android/libandroid_tensorflow_inference_java.jar`.
+Copy the jar file into `libs` folder and so file into `libs/armeabi-v7a` folder.
+
+If you get build errors about protocol buffers, run
+`git submodule update --init` from tensorflow root directory and build again.
+
+Run this from folder `//tensorflow/examples/numseq-android`:
 
 ```bash
 $ ./gradlew build
 ```
-
-If you get build errors about protocol buffers, run
-`git submodule update --init` from tensorflow root directory and build again.
 
 If adb debugging is enabled on your Android 5.0 or later device, you may then
 use the following command from your workspace root to install the APK once
